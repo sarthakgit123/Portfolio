@@ -43,6 +43,11 @@ const RADIUS = 2.6;
  */
 const CAP_FRACTION = 0.46;
 /**
+ * Sky to keep clear above the limb, in CSS pixels: enough for the nav, the
+ * role line, both lines of the name and the tagline beneath it.
+ */
+const HEADLINE_CLEARANCE_PX = 460;
+/**
  * How far past "limb exactly through the bottom corners" to push the radius.
  * Above 1 the arc flattens and leaves the frame up the left and right edges
  * instead of at the corners, which is what reads as a close horizon rather
@@ -351,8 +356,24 @@ export function EarthGlobe({ onReady }: { onReady?: () => void }) {
       const halfH = Math.tan((FOV / 2) * (Math.PI / 180)) * CAMERA_Z;
       const halfW = halfH * camera.aspect;
 
-      // How tall the visible cap is, in world units.
-      const cap = halfH * 2 * CAP_FRACTION;
+      /**
+       * How tall the visible cap is, in world units.
+       *
+       * `CAP_FRACTION` alone is not enough. The hero type occupies a roughly
+       * fixed number of pixels, so on a short window it takes a far larger
+       * share of the screen — at 670px tall a 46% cap put the limb straight
+       * through the second line of the name. So the fraction governs on tall
+       * viewports, and a minimum clearance in pixels governs on short ones,
+       * whichever leaves the headline alone.
+       *
+       * The clearance is sized to the name and tagline, not the whole hero:
+       * the scrim handles body copy sitting over the planet perfectly well,
+       * and it is only the very large type that a hard limb line cuts.
+       */
+      const viewportPx = mount.clientHeight || 900;
+      const clearancePx = Math.max(120, viewportPx - HEADLINE_CLEARANCE_PX);
+      const capPx = Math.min(viewportPx * CAP_FRACTION, clearancePx);
+      const cap = halfH * 2 * (capPx / viewportPx);
 
       /**
        * Radius whose chord at the frame's bottom edge spans the full viewport
