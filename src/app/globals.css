@@ -1,0 +1,305 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Deep-black, single-theme (dark) system. Accent is reserved for a small
+   number of interactions and highlights — never for large surfaces.
+--------------------------------------------------------------------------- */
+/* Palette is tuned to the scene behind it: the nebula reads deep teal-green
+   and the planet edge cold blue, so the neutrals carry a slight cool cast
+   rather than the warm-grey default. A pure-neutral grey looked muddy against
+   it; these read as the same light. */
+:root {
+  --background: #050607;
+  --foreground: #eef3f4;
+
+  --muted: #0b0d0e;
+  --muted-foreground: #b4c2c6;
+
+  --card: rgba(255, 255, 255, 0.045);
+  --card-foreground: #f5f5f5;
+  --popover: #0a0a0c;
+  --popover-foreground: #f5f5f5;
+
+  --primary: #f5f5f5;
+  --primary-foreground: #050505;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: #f5f5f5;
+
+  /* Monochrome accent. The "accent" is light against black — no hue at all,
+     so emphasis comes from luminance and the gradient's fall-off instead. */
+  /* Ice-cyan accent, picked from the planet's atmospheric rim. Violet fought
+     the green cast of the scene; this sits inside it. Used very sparingly. */
+  --accent: #7fd1de;
+  --accent-foreground: #050607;
+  --accent-from: #7fd1de;
+  --accent-to: #3f6b74;
+
+  /* Glow / wash colours, all neutral. White carries far more perceived
+     intensity than a saturated hue, so these alphas stay deliberately low. */
+  --glow-strong: rgba(255, 255, 255, 0.1);
+  --glow-soft: rgba(255, 255, 255, 0.05);
+
+  --destructive: #ef4444;
+
+  /* Panel surfaces. The page sits at #050607, so a panel needs a real step up
+     to read as a separate plane — the earlier #08080a was within a point or
+     two of the background and the cards dissolved into it. These carry the
+     same cool cast as the rest of the palette. */
+  --surface: #0c1113;
+  --surface-raised: #11181b;
+  --surface-hi: #182023;
+
+  --border: rgba(214, 238, 242, 0.16);
+  --border-strong: rgba(214, 238, 242, 0.32);
+  --input: rgba(214, 238, 242, 0.16);
+  --ring: rgba(127, 209, 222, 0.7);
+
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-aurora: aurora 18s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 2.5s linear infinite;
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-beam: beam 4s linear infinite;
+  --animate-pulse-slow: pulse-slow 5s ease-in-out infinite;
+}
+
+@keyframes aurora {
+  0% {
+    transform: translate3d(-8%, -4%, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 4%, 0) scale(1.12);
+  }
+  100% {
+    transform: translate3d(-4%, 6%, 0) scale(1.04);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Each track is rendered twice and shifted by its own full width (padding
+   included), so the duplicate lands exactly where the original started. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+/* The opening cover's exit is a CSS animation, not a React transition, on
+   purpose: it sits over the whole site, so its removal must not depend on
+   component state settling. Even if the script stalls, the cover still lifts
+   and `visibility: hidden` stops it intercepting input. */
+@keyframes intro-cover {
+  0%,
+  78% {
+    transform: translateY(0);
+    visibility: visible;
+  }
+  100% {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: auto; /* Lenis owns smooth scrolling */
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "cv11", "ss01";
+    font-variant-ligatures: contextual;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Headings lean tight and optically balanced at large sizes. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    border: 3px solid var(--background);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+}
+
+@layer utilities {
+  /* Matte system: no gradients anywhere. Emphasis comes from flat tone steps
+     against near-black, which is what keeps the finish industrial rather than
+     glossy. Both utilities keep their names so call sites stay unchanged. */
+  .text-gradient {
+    color: #f4f9fa;
+  }
+
+  /* Type that sits directly over the rendered planet. The scrim handles the
+     bulk of it, but the lit limb is genuinely bright in places, so headline
+     and lead copy carry their own shadow rather than relying on the scrim
+     being heavy enough to cover the worst case. Costs nothing over the parts
+     of the hero that are already dark. */
+  .text-on-scene {
+    text-shadow:
+      0 1px 2px rgba(5, 6, 7, 0.55),
+      0 4px 24px rgba(5, 6, 7, 0.75);
+  }
+
+  .accent-gradient {
+    background-color: rgba(214, 238, 242, 0.24);
+  }
+
+  /* Glassmorphism: restrained — low alpha, real blur, one hairline. */
+  .glass {
+    background-color: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid var(--border);
+  }
+
+  .hairline-t {
+    border-top: 1px solid var(--border);
+  }
+
+  /* Very fine film grain keeps large black fields from banding. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  }
+
+  .mask-fade-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 12%,
+      black 88%,
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 12%,
+      black 88%,
+      transparent
+    );
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion: strip decorative animation, keep the site fully usable.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

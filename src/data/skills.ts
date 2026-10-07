@@ -1,0 +1,72 @@
+import { Code2, BrainCircuit, Server, Wrench } from "lucide-react";
+import type { SkillGroup } from "@/types";
+
+export const skillGroups: SkillGroup[] = [
+  {
+    id: "programming-data",
+    title: "Programming & Data",
+    icon: Code2,
+    skills: [
+      "Python",
+      "SQL",
+      "C++",
+      "JavaScript",
+      "Pandas",
+      "NumPy",
+      "Excel",
+      "EDA",
+      "Data Visualization",
+      "Matplotlib",
+      "Plotly",
+    ],
+  },
+  {
+    id: "ai-ml",
+    title: "AI & Machine Learning",
+    icon: BrainCircuit,
+    skills: [
+      "Scikit-learn",
+      "TensorFlow",
+      "XGBoost",
+      "NLP",
+      "RAG",
+      "Prompt Engineering",
+      "LLM Applications",
+      "Embeddings",
+      "Vector Search",
+      "Gemini API",
+      "OpenRouter",
+    ],
+  },
+  {
+    id: "backend-databases",
+    title: "Backend & Databases",
+    icon: Server,
+    skills: [
+      "FastAPI",
+      "Flask",
+      "Django",
+      "REST APIs",
+      "PostgreSQL",
+      "FAISS",
+      "n8n",
+      "Workflow Automation",
+      "OCR",
+    ],
+  },
+  {
+    id: "developer-tools",
+    title: "Developer Tools",
+    icon: Wrench,
+    skills: [
+      "Git",
+      "GitHub",
+      "Docker",
+      "VS Code",
+      "Postman",
+      "GitHub Actions",
+      "DSA",
+      "OOP",
+    ],
+  },
+];
